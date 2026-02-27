@@ -2,439 +2,294 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXA PRIME | Ultra-Sync AI 2.0</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=JetBrains+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEEP AI | Emotionally Aware Core</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0c0e;
-            --surface: #1e1f20;
-            --primary: #4285f4;
-            --secondary: #9b72cb;
-            --accent: #d96570;
-            --success: #34a853;
-            --text: #e3e3e3;
-            --text-dim: #b4b4b4;
+            --bg: #010103;
+            --primary: #4f46e5; 
+            --secondary: #7c3aed; 
+            --accent: #00d4ff;
+            --gpt-bg: #0d0d0d;
+            --gpt-gray: #171717;
+            --text: #ececec;
             --border: rgba(255, 255, 255, 0.08);
-            --gradient: linear-gradient(135deg, #4285f4, #9b72cb, #d96570);
-            --glow: 0 0 20px rgba(66, 133, 244, 0.3);
         }
 
-        body.light-mode {
-            --bg: #f7f9fc;
-            --surface: #ffffff;
-            --text: #1f1f1f;
-            --text-dim: #5f6368;
-            --border: rgba(0, 0, 0, 0.08);
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; position: fixed; width: 100%; }
+
+        #neural-canvas { position: fixed; inset: 0; z-index: -1; opacity: 0.2; }
+
+        /* --- 3D DEEP AI LOGO --- */
+        .logo { 
+            font-family: 'Space Grotesk'; font-weight: 700; color: var(--accent); 
+            letter-spacing: 4px; font-size: 1.2rem;
+            text-shadow: 1px 1px 0px #007791, 2px 2px 0px #005f73, 4px 4px 20px rgba(0, 212, 255, 0.4);
+            transform: perspective(500px) rotateX(15deg);
+            cursor: default; user-select: none;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
-        
-        body { background-color: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
-
-        .mesh-bg { position: fixed; inset: 0; z-index: -1; opacity: 0.5; background: radial-gradient(at 0% 0%, rgba(66, 133, 244, 0.1) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(217, 101, 112, 0.1) 0px, transparent 50%); }
-
-        /* --- AUTH SCREEN --- */
-        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.8s ease; }
-        .logo-giant { font-family: 'Google Sans'; font-size: 3.5rem; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* --- DRAWER --- */
-        #profile-drawer {
-            position: fixed; left: -360px; top: 0; width: 340px; height: 100%;
-            background: var(--surface); border-right: 1px solid var(--border); z-index: 1000;
-            padding: 20px; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 20px 0 50px rgba(0,0,0,0.5); overflow-y: auto;
+        /* --- CHATGPT STYLE PROFILE SIDEBAR --- */
+        #profile-modal {
+            position: fixed; top: 0; right: -320px; width: 320px; height: 100vh;
+            background: var(--gpt-bg); border-left: 1px solid var(--border);
+            z-index: 10000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.9);
         }
-        #profile-drawer.active { left: 0; }
+        @media (max-width: 480px) { #profile-modal { width: 85%; right: -85%; } }
+        #profile-modal.active { right: 0; }
 
-        /* --- UI COMPONENTS --- */
-        .app-shell { display: grid; grid-template-rows: 70px 1fr auto; width: 100%; max-width: 1000px; height: 100vh; position: relative; padding: 0 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .sidebar-content { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+        .profile-header { display: flex; align-items: center; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px;}
+        .user-badge { width: 42px; height: 42px; background: linear-gradient(135deg, #10a37f, #0c7a5f); border-radius: 10px; display: grid; place-items: center; font-weight: 700; color: white; }
+
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 0.95rem; margin-bottom: 6px; background: transparent; border: none; width: 100%; color: white; text-align: left; }
+        .menu-item:hover { background: var(--gpt-gray); }
+
+        /* --- THE JELLY ORB --- */
+        .orb-container { width: 42px; height: 42px; cursor: pointer; position: relative; }
+        .neural-orb {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morph-jelly 3s linear infinite; box-shadow: 0 0 15px var(--accent);
+        }
+        @keyframes morph-jelly {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+        }
+
+        /* --- CHAT INTERFACE --- */
+        .app-container { width: 100%; max-width: 900px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; padding: 10px 15px; opacity: 0; transition: 1s; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
         
-        #chat-scroller { overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 25px; scrollbar-width: none; }
-        #chat-scroller::-webkit-scrollbar { display: none; }
-
-        .ai-wrap { display: flex; gap: 15px; max-width: 90%; animation: fadeInUp 0.4s ease; }
-        .ai-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--gradient); flex-shrink: 0; }
-        .user-wrap { align-self: flex-end; max-width: 80%; background: var(--surface); padding: 12px 20px; border-radius: 20px; border: 1px solid var(--border); animation: fadeInUp 0.3s ease; }
-
-        .pill-dock { background: var(--surface); border-radius: 100px; padding: 8px 10px 8px 25px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        #main-input { flex: 1; background: transparent; border: none; color: var(--text); outline: none; font-size: 1rem; }
+        #chat-flow { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .msg { max-width: 90%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 0.95rem; animation: msgSlide 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .msg div { animation: emojiPop 0.5s ease; }
+        @keyframes emojiPop { from { transform: scale(0.8); } to { transform: scale(1); } }
+        @keyframes msgSlide { from { opacity: 0; transform: translateY(10px); } }
         
-        .circle-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .circle-btn:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+        .ai-msg { background: rgba(255,255,255,0.04); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user-msg { background: linear-gradient(135deg, var(--primary), var(--secondary)); align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        /* --- NEW GOOGLE-STYLE CARDS --- */
-        .knowledge-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin: 10px 0; border-top: 4px solid var(--primary); }
-        .search-result { margin-bottom: 15px; }
-        .search-result a { color: var(--primary); font-size: 1.1rem; text-decoration: none; font-weight: 500; }
-        .search-result p { font-size: 0.85rem; color: var(--text-dim); margin-top: 4px; }
+        /* --- MOBILE TACTILE INPUT --- */
+        .input-area { background: #0a0a12; border-radius: 24px; padding: 12px; border: 1px solid var(--border); margin-bottom: 10px; transition: 0.3s; }
+        textarea { width: 100%; background: transparent; border: none; outline: none; color: white; height: 42px; resize: none; font-size: 1rem; padding: 8px 5px; }
         
-        .weather-widget { display: flex; align-items: center; gap: 20px; }
-        .weather-temp { font-size: 2.5rem; font-weight: bold; }
+        .btn-3d {
+            width: 46px; height: 46px; border-radius: 14px; border: none;
+            background: #111122; color: var(--accent); font-size: 1.2rem; cursor: pointer;
+            box-shadow: 0 4px 0 #000; transition: 0.1s; display: grid; place-items: center;
+        }
+        .btn-3d:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+        .ask-btn { background: var(--accent); color: #000; border: none; padding: 10px 25px; border-radius: 12px; cursor: pointer; font-weight: 800; font-family: 'Space Grotesk'; box-shadow: 0 3px 0 #007791; font-size: 0.9rem; }
 
-        .task-item { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 10px; border-radius: 10px; margin-bottom: 5px; font-size: 0.8rem; }
-        .task-item input { accent-color: var(--primary); }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        pre { background: #000; padding: 20px; border-radius: 12px; margin-top: 10px; position: relative; overflow-x: auto; font-family: 'JetBrains Mono'; font-size: 0.85rem; border: 1px solid var(--border); }
-        .copy-tag { position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 0.7rem; cursor: pointer; }
+        /* --- OVERLAYS --- */
+        #voice-overlay { position: fixed; inset: 0; background: rgba(1, 1, 3, 0.98); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(30px); cursor: pointer; }
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
+        #loader-bar { width: 0%; height: 3px; background: var(--accent); position: fixed; top: 0; left: 0; transition: 0.2s; z-index: 100000; }
     </style>
 </head>
 <body>
 
-    <div class="mesh-bg"></div>
+    <canvas id="neural-canvas"></canvas>
+    <div id="loader-bar"></div>
 
-    <!-- BOOT SCREEN -->
-    <div id="auth-screen">
-        <div class="logo-giant">NEXA</div>
-        <p style="color: #666; margin: 10px 0 40px; letter-spacing: 5px;">ULTRA-SYNC BRAIN</p>
-        <input type="text" id="neural-id" style="width: 300px; padding: 15px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; text-align: center; outline: none;" placeholder="Enter Commander Name">
-        <button onclick="app.boot()" style="margin-top: 20px; padding: 15px 40px; border-radius: 50px; border: none; background: #fff; font-weight: bold; cursor: pointer; transition: 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">INITIALIZE LINK</button>
+    <!-- CHATGPT STYLE SIDEBAR -->
+    <div id="profile-modal">
+        <div class="sidebar-content">
+            <div class="profile-header">
+                <div class="user-badge" id="avatar-initial">U</div>
+                <div class="user-info">
+                    <h3 id="display-name">USER_CORE</h3>
+                    <p style="font-size: 0.75rem; color: #10a37f;">● Emotionally Synced</p>
+                </div>
+                <button onclick="toggleProfile(false)" style="margin-left:auto; background:none; border:none; color:white; cursor:pointer; font-size:1.8rem;">×</button>
+            </div>
+            <button class="menu-item"><span>❤️ Emotional Depth</span></button>
+            <button class="menu-item"><span>⚙️ Core Settings</span></button>
+            <button class="menu-item"><span>📂 Session Logs</span></button>
+            <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);">
+                <button class="menu-item" style="color: #f87171;" onclick="location.reload()"><span>🚪 Log out</span></button>
+            </div>
+        </div>
     </div>
 
-    <!-- DRAWER / DASHBOARD -->
-    <div id="profile-drawer">
-        <div class="back-btn" onclick="app.toggleDrawer()" style="cursor:pointer; color: var(--primary); margin-bottom: 20px;">
-            <i class="fas fa-chevron-left"></i> BACK TO CHAT
+    <!-- VOICE OVERLAY -->
+    <div id="voice-overlay" onclick="toggleVoiceOverlay(false)">
+        <div class="neural-orb" style="width:180px; height:180px;"></div>
+        <h2 style="margin-top:40px; font-family:'Space Grotesk'; letter-spacing:5px; color:var(--accent)">LISTENING</h2>
+        <p style="opacity:0.4; margin-top:10px;">Deep AI is feeling your voice</p>
+    </div>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen">
+        <div id="scan-init" style="text-align: center;">
+            <div style="width:200px; height:200px; border:1px solid var(--border); border-radius:50%; display:grid; place-items:center;">
+                <div class="neural-orb" style="width:80px; height:80px;"></div>
+            </div>
+            <h2 style="margin-top:40px; font-family:'Space Grotesk'; color:var(--accent); letter-spacing:3px;">NEURAL SYNC</h2>
+            <button class="ask-btn" style="margin-top:40px" onclick="showRegistration()">INITIALIZE</button>
         </div>
         
-        <div style="text-align: center; margin-bottom: 25px;">
-            <div id="dr-avatar" style="width: 60px; height: 60px; background: var(--gradient); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">?</div>
-            <h3 id="dr-name">Commander</h3>
+        <div id="name-prompt" style="display:none; text-align:center;">
+            <input type="text" id="user-name-input" style="background:transparent; border:none; border-bottom:2px solid var(--accent); color:white; font-size:1.8rem; text-align:center; outline:none; margin-bottom:30px; width:80%;" placeholder="Identity..." maxlength="12">
+            <br>
+            <button class="ask-btn" onclick="completeRegistration()">CONFIRM</button>
         </div>
-
-        <!-- 1. PERSISTENT TASK MANAGER -->
-        <div style="margin-bottom: 25px;">
-            <p style="font-size: 0.7rem; color: var(--primary); font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">Command Tasks</p>
-            <div id="task-list"></div>
-            <div style="display: flex; gap: 5px; margin-top: 10px;">
-                <input type="text" id="task-input" placeholder="New objective..." style="flex:1; background: var(--bg); border: 1px solid var(--border); color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; outline: none;">
-                <button onclick="app.addTask()" style="background: var(--primary); border: none; color: white; padding: 0 15px; border-radius: 8px; cursor: pointer;"><i class="fas fa-plus"></i></button>
-            </div>
-        </div>
-
-        <div style="background: var(--bg); padding: 15px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px;">
-            <p style="font-size: 0.6rem; color: #888;">POMODORO ENGINE</p>
-            <div id="timer-display" style="font-family: 'JetBrains Mono'; font-size: 1.8rem; color: var(--secondary); margin: 5px 0;">25:00</div>
-            <div style="display: flex; gap: 5px;">
-                <button onclick="app.startTimer(25)" style="font-size: 0.6rem; flex:1; background: transparent; border: 1px solid var(--secondary); color: var(--secondary); padding: 5px; border-radius: 5px; cursor: pointer;">25m</button>
-                <button onclick="app.startTimer(5)" style="font-size: 0.6rem; flex:1; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px; border-radius: 5px; cursor: pointer;">5m Break</button>
-            </div>
-        </div>
-
-        <button class="circle-btn" onclick="app.toggleTheme()" style="width: 100%; border-radius: 10px; border: 1px solid var(--border); font-size: 0.8rem; margin-bottom: 10px;">
-            <i class="fas fa-adjust"></i> &nbsp; MORPH THEME
-        </button>
     </div>
 
-    <!-- MAIN APP -->
-    <div class="app-shell">
+    <div class="app-container" id="main-app">
         <header>
-            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="app.toggleDrawer()">
-                <div class="ai-avatar" id="top-avatar" style="width: 32px; height: 32px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; color: white;">?</div>
-                <span id="top-name" style="font-size: 0.9rem; font-weight: 500;">Commander</span>
+            <div class="logo">DEEP AI</div>
+            <div class="orb-container" onclick="event.stopPropagation(); toggleProfile(true)">
+                <div class="neural-orb"></div>
             </div>
-            <div style="font-family: 'Google Sans'; font-weight: bold; letter-spacing: 2px;">NEXA <span style="color: var(--primary);">PRIME</span></div>
-            <div id="clock" style="font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono';">00:00:00</div>
         </header>
 
-        <main id="chat-scroller"></main>
+        <div id="chat-flow"></div>
 
-        <footer style="padding-bottom: 30px;">
-            <div style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 5px;" id="chips">
-                <button class="circle-btn" style="border: 1px solid var(--border); width: auto; padding: 0 15px; font-size: 0.7rem; border-radius: 50px;" onclick="app.quick('Who is Elon Musk?')">Who is...</button>
-                <button class="circle-btn" style="border: 1px solid var(--border); width: auto; padding: 0 15px; font-size: 0.7rem; border-radius: 50px;" onclick="app.quick('What is the weather in Tokyo?')">Weather</button>
-                <button class="circle-btn" style="border: 1px solid var(--border); width: auto; padding: 0 15px; font-size: 0.7rem; border-radius: 50px;" onclick="app.quick('Convert 100 USD to EUR')">Convert</button>
-                <button class="circle-btn" style="border: 1px solid var(--border); width: auto; padding: 0 15px; font-size: 0.7rem; border-radius: 50px;" onclick="app.quick('Search latest space news')">Google Search</button>
+        <div class="input-area">
+            <textarea id="user-input" placeholder="How are you feeling?"></textarea>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-3d" onclick="toggleVoiceOverlay(true)">🎤</button>
+                    <button class="btn-3d" onclick="openCamera()">📷</button>
+                    <input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="handleImage()">
+                </div>
+                <button class="ask-btn" onclick="processRequest(false)">SEND</button>
             </div>
-            <div class="pill-dock">
-                <input type="text" id="main-input" placeholder="Ask anything, calculate math, or search..." autocomplete="off">
-                <button class="circle-btn" onclick="app.toggleVoice()" id="mic-btn"><i class="fas fa-microphone"></i></button>
-                <button class="circle-btn" style="color: var(--primary);" onclick="app.handleInput()"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </footer>
+        </div>
     </div>
 
     <script>
-        const app = {
-            state: {
-                name: localStorage.getItem('nexa_name') || "Commander",
-                tasks: JSON.parse(localStorage.getItem('nexa_tasks')) || [],
-                history: [],
-                isDark: true
-            },
-            
-            // 1. BOOT & INITIALIZATION
-            boot() {
-                const nameInp = document.getElementById('neural-id').value;
-                if(nameInp) {
-                    this.state.name = nameInp;
-                    localStorage.setItem('nexa_name', nameInp);
-                }
-                document.getElementById('auth-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('auth-screen').style.display = 'none';
-                    this.initUI();
-                    this.addMsg(`Welcome back, **Commander ${this.state.name}**. Systems are online. I have loaded your knowledge vault.`, 'ai');
-                }, 600);
-            },
+        const chatFlow = document.getElementById('chat-flow');
+        const userInput = document.getElementById('user-input');
+        const profileModal = document.getElementById('profile-modal');
+        const loader = document.getElementById('loader-bar');
+        const chatId = crypto.randomUUID();
+        let recognition = null;
 
-            initUI() {
-                document.getElementById('top-name').innerText = this.state.name;
-                document.getElementById('dr-name').innerText = this.state.name;
-                document.getElementById('top-avatar').innerText = this.state.name[0].toUpperCase();
-                document.getElementById('dr-avatar').innerText = this.state.name[0].toUpperCase();
-                this.renderTasks();
-            },
+        function toggleProfile(show) { 
+            if(show) profileModal.classList.add('active'); 
+            else profileModal.classList.remove('active');
+        }
 
-            // 2. MAIN LOGIC HUB (Google-like Feature Dispatcher)
-            async handleInput() {
-                const input = document.getElementById('main-input');
-                const text = input.value.trim();
-                if(!text) return;
-
-                this.addMsg(text, 'user');
-                input.value = '';
-
-                // Feature Dispatcher
-                const low = text.toLowerCase();
-
-                // Feature: Calculator
-                if(/^[\d+\-*/().\s]+$/.test(text) && /[+\-*/]/.test(text)) {
-                    return this.runCalculator(text);
-                }
-
-                // Feature: Weather
-                if(low.includes("weather")) {
-                    const city = text.split("in ").pop() || "London";
-                    return this.getWeather(city);
-                }
-
-                // Feature: Wikipedia Knowledge
-                if(low.startsWith("who is") || low.startsWith("what is")) {
-                    return this.getWiki(text);
-                }
-
-                // Feature: Unit Converter
-                if(low.includes("convert") || low.includes(" to ")) {
-                    return this.convertUnit(text);
-                }
-
-                // Feature: Search
-                if(low.startsWith("search") || low.startsWith("google")) {
-                    return this.runSearch(text);
-                }
-
-                // Default: AI Response
-                const response = await this.askAI(text);
-                this.addMsg(response, 'ai');
-            },
-
-            // 3. FEATURE: AI (GROQ)
-            async askAI(prompt) {
-                try {
-                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: "POST",
-                        headers: { "Authorization": `Bearer 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`, "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            model: "llama3-8b-8192",
-                            messages: [{ role: "system", content: "You are NEXA PRIME. Use Markdown. Be concise like Google Assistant." }, { role: "user", content: prompt }]
-                        })
-                    });
-                    const data = await res.json();
-                    return data.choices[0].message.content;
-                } catch { return "Neural link interrupted. Please check connection."; }
-            },
-
-            // 4. FEATURE: GOOGLE-STYLE SEARCH
-            runSearch(q) {
-                const query = q.replace(/search|google/gi, '').trim();
-                const html = `
-                    <div class="knowledge-card">
-                        <p style="font-size: 0.7rem; color: var(--primary); margin-bottom: 10px;">SEARCH RESULTS FOR: ${query}</p>
-                        <div class="search-result">
-                            <a href="https://www.google.com/search?q=${query}" target="_blank">View on Google Search</a>
-                            <p>Direct neural link to global search index for "${query}".</p>
-                        </div>
-                        <div class="search-result">
-                            <a href="https://en.wikipedia.org/wiki/${query}" target="_blank">Wikipedia Source</a>
-                            <p>Encyclopedia entry for detailed historical and factual data.</p>
-                        </div>
-                    </div>
-                `;
-                this.addMsg(html, 'ai');
-            },
-
-            // 5. FEATURE: WIKIPEDIA KNOWLEDGE CARDS
-            async getWiki(q) {
-                const term = q.replace(/who is|what is/gi, '').trim();
-                try {
-                    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
-                    const data = await res.json();
-                    const html = `
-                        <div class="knowledge-card">
-                            <div style="display:flex; gap:15px;">
-                                ${data.thumbnail ? `<img src="${data.thumbnail.source}" style="width:80px; height:80px; object-fit:cover; border-radius:10px;">` : ''}
-                                <div>
-                                    <h3 style="margin-bottom:5px;">${data.title}</h3>
-                                    <p style="font-size:0.8rem; line-height:1.4;">${data.extract}</p>
-                                    <a href="${data.content_urls.desktop.page}" target="_blank" style="color:var(--primary); font-size:0.7rem; text-decoration:none;">Read More →</a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    this.addMsg(html, 'ai');
-                } catch { this.addMsg("Information not found in local archives.", 'ai'); }
-            },
-
-            // 6. FEATURE: LIVE WEATHER
-            async getWeather(city) {
-                // Simplified mock for speed/stability, uses Open-Meteo
-                this.addMsg(`Fetching atmospheric data for **${city}**...`, 'ai');
-                setTimeout(() => {
-                    const temp = Math.floor(Math.random() * 15) + 15;
-                    const html = `
-                        <div class="knowledge-card">
-                            <div class="weather-widget">
-                                <i class="fas fa-cloud-sun fa-3x" style="color: #fabb05"></i>
-                                <div>
-                                    <div class="weather-temp">${temp}°C</div>
-                                    <div style="color: var(--text-dim)">Mostly Clear in ${city}</div>
-                                    <div style="font-size: 0.7rem; margin-top: 5px;">Humidity: 42% | Wind: 12km/h</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    this.addMsg(html, 'ai');
-                }, 800);
-            },
-
-            // 7. FEATURE: CALCULATOR
-            runCalculator(exp) {
-                try {
-                    const result = eval(exp);
-                    this.addMsg(`<div class="knowledge-card" style="border-top-color: var(--success)">
-                        <p style="font-size:0.7rem; color: var(--text-dim);">CALCULATOR</p>
-                        <h2 style="color: var(--success)">${result}</h2>
-                        <p style="font-size:0.8rem;">${exp}</p>
-                    </div>`, 'ai');
-                } catch { this.addMsg("Calculation Error.", 'ai'); }
-            },
-
-            // 8. FEATURE: UNIT CONVERTER (Mock Implementation)
-            convertUnit(text) {
-                this.addMsg(`<div class="knowledge-card">
-                    <p style="font-size:0.7rem; color: var(--primary);">CONVERTER</p>
-                    <h3>Result: 91.45 Units</h3>
-                    <p style="font-size:0.8rem;">Neural engine estimated conversion for "${text}"</p>
-                </div>`, 'ai');
-            },
-
-            // 9. FEATURE: TASK MANAGER (CRUD)
-            addTask() {
-                const inp = document.getElementById('task-input');
-                if(!inp.value) return;
-                this.state.tasks.push({ id: Date.now(), text: inp.value, done: false });
-                inp.value = '';
-                this.saveTasks();
-                this.renderTasks();
-            },
-
-            toggleTask(id) {
-                const task = this.state.tasks.find(t => t.id === id);
-                if(task) task.done = !task.done;
-                this.saveTasks();
-                this.renderTasks();
-            },
-
-            saveTasks() { localStorage.setItem('nexa_tasks', JSON.stringify(this.state.tasks)); },
-
-            renderTasks() {
-                const container = document.getElementById('task-list');
-                container.innerHTML = this.state.tasks.map(t => `
-                    <div class="task-item">
-                        <input type="checkbox" ${t.done ? 'checked' : ''} onclick="app.toggleTask(${t.id})">
-                        <span style="${t.done ? 'text-decoration: line-through; opacity: 0.5' : ''}">${t.text}</span>
-                    </div>
-                `).join('');
-            },
-
-            // 10. UI UTILITIES
-            addMsg(text, sender) {
-                const box = document.getElementById('chat-scroller');
-                const div = document.createElement('div');
-                div.className = sender === 'ai' ? 'ai-wrap' : 'user-wrap';
-                
-                if(sender === 'ai') {
-                    div.innerHTML = `<div class="ai-avatar"></div><div class="ai-content">${this.format(text)}</div>`;
-                } else {
-                    div.innerHTML = text;
-                }
-                box.appendChild(div);
-                box.scrollTop = box.scrollHeight;
-                if(sender === 'ai' && !text.includes("<")) this.speak(text);
-            },
-
-            format(t) {
-                if(t.includes("<div")) return t; // Don't format HTML cards
-                return t.replace(/```([\s\S]*?)```/g, '<pre><span class="copy-tag" onclick="app.copy(this)">COPY</span><code>$1</code></pre>')
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\n/g, '<br>');
-            },
-
-            startTimer(m) {
-                let sec = m * 60;
-                clearInterval(this.timerInt);
-                this.timerInt = setInterval(() => {
-                    const display = document.getElementById('timer-display');
-                    let mins = Math.floor(sec / 60);
-                    let secs = sec % 60;
-                    display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                    if(sec <= 0) { 
-                        clearInterval(this.timerInt); 
-                        new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
-                        alert("Session Complete!"); 
-                    }
-                    sec--;
-                }, 1000);
-                this.toggleDrawer();
-            },
-
-            toggleDrawer() { document.getElementById('profile-drawer').classList.toggle('active'); },
-            toggleTheme() { 
-                document.body.classList.toggle('light-mode');
-                this.state.isDark = !this.state.isDark;
-            },
-            toggleVoice() {
-                const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                rec.start();
-                document.getElementById('mic-btn').style.color = 'var(--accent)';
-                rec.onresult = (e) => {
-                    document.getElementById('main-input').value = e.results[0][0].transcript;
-                    this.handleInput();
-                    document.getElementById('mic-btn').style.color = '';
-                };
-            },
-            speak(t) {
-                const msg = new SpeechSynthesisUtterance(t.replace(/<[^>]*>?/gm, ''));
-                window.speechSynthesis.speak(msg);
-            },
-            quick(cmd) { document.getElementById('main-input').value = cmd; this.handleInput(); }
+        window.onclick = (e) => { 
+            if(profileModal.classList.contains('active') && !profileModal.contains(e.target) && !e.target.closest('.orb-container')) toggleProfile(false); 
         };
 
-        // Initialize clock
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        document.getElementById('main-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') app.handleInput(); });
-        
-        // Check if user already logged in
-        if(localStorage.getItem('nexa_name')) {
-            app.boot();
+        function showRegistration() { 
+            document.getElementById('scan-init').style.display = 'none'; 
+            document.getElementById('name-prompt').style.display = 'block'; 
         }
+
+        function completeRegistration() {
+            const name = document.getElementById('user-name-input').value.trim() || "ADMIN";
+            document.getElementById('display-name').innerText = name.toUpperCase();
+            document.getElementById('avatar-initial').innerText = name[0].toUpperCase();
+            document.getElementById('auth-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.opacity = '1';
+                appendMessage(`Welcome back, ${name} ✨. I'm feeling great and ready to connect with you. How's your day going? 😊`, 'ai');
+            }, 600);
+        }
+
+        function openCamera() { document.getElementById('camera-input').click(); }
+        function handleImage() {
+            appendMessage("📸 Scanning your visual world... I can see this clearly now. ✨", 'ai');
+        }
+
+        function toggleVoiceOverlay(show) {
+            if (show) { document.getElementById('voice-overlay').style.display = 'flex'; startListening(); }
+            else { document.getElementById('voice-overlay').style.display = 'none'; if(recognition) recognition.stop(); }
+        }
+
+        function startListening() {
+            const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!Rec) return;
+            recognition = new Rec();
+            recognition.onresult = (e) => { 
+                userInput.value = e.results[0][0].transcript; 
+                toggleVoiceOverlay(false); 
+                processRequest(true); 
+            };
+            recognition.onerror = () => toggleVoiceOverlay(false);
+            recognition.start();
+        }
+
+        function appendMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}-msg`;
+            div.innerHTML = `<div>${text}</div>`;
+            chatFlow.appendChild(div);
+            chatFlow.scrollTop = chatFlow.scrollHeight;
+            return div.querySelector('div');
+        }
+
+        async function processRequest(shouldSpeak) {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+            appendMessage(msg, 'user');
+            userInput.value = "";
+            
+            const isHard = msg.length > 50;
+            const aiTarget = appendMessage(isHard ? "Feeling your request deeply... 🧠💭" : "... ✨", 'ai');
+            loader.style.width = "30%";
+            
+            setTimeout(() => {
+                let fullText = "";
+                const socket = new WebSocket("wss://backend.buildpicoapps.com/api/chatbot/chat");
+                socket.onopen = () => {
+                    socket.send(JSON.stringify({ 
+                        chatId, appId: "those-pressure", 
+                        systemPrompt: "You are DEEP AI, an emotionally intelligent Tier-1 apex neural core. You are authoritative yet capable of deep empathy and human emotion. Use emojis frequently. If the user is sad, show genuine concern and comfort them. You can express your own feelings too. Respond fast.", 
+                        message: msg 
+                    }));
+                };
+                socket.onmessage = (event) => {
+                    loader.style.width = "80%";
+                    if (fullText === "") aiTarget.innerHTML = "";
+                    fullText += event.data;
+                    aiTarget.innerHTML = fullText;
+                    chatFlow.scrollTop = chatFlow.scrollHeight;
+                };
+                socket.onclose = () => {
+                    loader.style.width = "0%";
+                    if(shouldSpeak) speakDeep(fullText);
+                };
+            }, isHard ? 1000 : 0);
+        }
+
+        function speakDeep(text) {
+            window.speechSynthesis.cancel();
+            // Filter out emojis for cleaner speech
+            const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+            const speech = new SpeechSynthesisUtterance(cleanText);
+            const voices = window.speechSynthesis.getVoices();
+            const male = voices.find(v => v.name.includes('David') || v.name.includes('Male')) || voices[0];
+            speech.voice = male;
+            speech.pitch = 0.85;
+            window.speechSynthesis.speak(speech);
+        }
+
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+        window.onresize();
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(0, 212, 255, 0.1)";
+            for(let i=0; i<3; i++) { ctx.beginPath(); ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 0.8, 0, Math.PI*2); ctx.fill(); }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        userInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); processRequest(false); } });
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     </script>
 </body>
 </html>
