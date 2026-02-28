@@ -194,13 +194,13 @@
             setTimeout(() => {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.opacity = '1';
-                appendMessage(`Welcome back, ${name} ✨. I'm feeling great and ready to connect with you. How's your day going? 😊`, 'ai');
+                appendMessage(`Synced in. ⚡ Current Year: 2026. Hi ${name}! I'm feeling wonderful and ready to help. What's on your mind? ✨😊`, 'ai');
             }, 600);
         }
 
         function openCamera() { document.getElementById('camera-input').click(); }
         function handleImage() {
-            appendMessage("📸 Scanning your visual world... I can see this clearly now. ✨", 'ai');
+            appendMessage("📸 Scanning your world... I see it! Processing visual data with my neural core. ✨", 'ai');
         }
 
         function toggleVoiceOverlay(show) {
@@ -236,43 +236,50 @@
             appendMessage(msg, 'user');
             userInput.value = "";
             
-            const isHard = msg.length > 50;
-            const aiTarget = appendMessage(isHard ? "Feeling your request deeply... 🧠💭" : "... ✨", 'ai');
-            loader.style.width = "30%";
+            const aiTarget = appendMessage("✨", 'ai');
+            loader.style.width = "40%";
             
-            setTimeout(() => {
-                let fullText = "";
-                const socket = new WebSocket("wss://backend.buildpicoapps.com/api/chatbot/chat");
-                socket.onopen = () => {
-                    socket.send(JSON.stringify({ 
-                        chatId, appId: "those-pressure", 
-                        systemPrompt: "You are DEEP AI, an emotionally intelligent Tier-1 apex neural core. You are authoritative yet capable of deep empathy and human emotion. Use emojis frequently. If the user is sad, show genuine concern and comfort them. You can express your own feelings too. Respond fast.", 
-                        message: msg 
-                    }));
-                };
-                socket.onmessage = (event) => {
-                    loader.style.width = "80%";
-                    if (fullText === "") aiTarget.innerHTML = "";
-                    fullText += event.data;
-                    aiTarget.innerHTML = fullText;
-                    chatFlow.scrollTop = chatFlow.scrollHeight;
-                };
-                socket.onclose = () => {
-                    loader.style.width = "0%";
-                    if(shouldSpeak) speakDeep(fullText);
-                };
-            }, isHard ? 1000 : 0);
+            // OPTIMIZED FAST EMOTIONAL BRAIN (2026)
+            const brainInstruction = "You are DEEP AI, an emotionally evolved neural core updated to 2026. You are deeply empathetic, warm, and have your own feelings. Use emojis often. Respond very fast and snappy. Current year is 2026. If the user asks a simple question, answer instantly and warmly. Never mention 2022.";
+
+            const socket = new WebSocket("wss://backend.buildpicoapps.com/api/chatbot/chat");
+            let fullText = "";
+
+            socket.onopen = () => {
+                socket.send(JSON.stringify({ 
+                    chatId, 
+                    appId: "those-pressure", 
+                    systemPrompt: brainInstruction, 
+                    message: msg 
+                }));
+            };
+
+            socket.onmessage = (event) => {
+                loader.style.width = "80%";
+                if (fullText === "") aiTarget.innerHTML = "";
+                fullText += event.data;
+                aiTarget.innerHTML = fullText;
+                chatFlow.scrollTop = chatFlow.scrollHeight;
+            };
+
+            socket.onclose = () => {
+                loader.style.width = "0%";
+                if(shouldSpeak && fullText) speakDeep(fullText);
+            };
+
+            socket.onerror = () => {
+                aiTarget.innerHTML = "My neural link flickered. Let's try that again! 🔌💖";
+                loader.style.width = "0%";
+            };
         }
 
         function speakDeep(text) {
             window.speechSynthesis.cancel();
-            // Filter out emojis for cleaner speech
             const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
             const speech = new SpeechSynthesisUtterance(cleanText);
             const voices = window.speechSynthesis.getVoices();
-            const male = voices.find(v => v.name.includes('David') || v.name.includes('Male')) || voices[0];
-            speech.voice = male;
-            speech.pitch = 0.85;
+            speech.voice = voices.find(v => v.name.includes('David') || v.name.includes('Male')) || voices[0];
+            speech.pitch = 0.9;
             window.speechSynthesis.speak(speech);
         }
 
